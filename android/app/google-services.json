@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18256430976",
+    "project_id": "spotsvista",
+    "storage_bucket": "spotsvista.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18256430976:android:a766300f06669cd011a365",
+        "android_client_info": {
+          "package_name": "com.spotsvista"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgp4Ka0ETF6rcYNIqfjFMS8A9t82ztO3E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
