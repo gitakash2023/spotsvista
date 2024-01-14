@@ -83,6 +83,7 @@ const RideInputFields = () => {
       ]
     );
   };
+  
 
   return (
     <View style={styles.container}>
