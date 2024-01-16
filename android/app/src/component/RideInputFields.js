@@ -142,7 +142,7 @@ const RideInputFields = () => {
               description: `Payment for ${selectedRide.title}`,
               currency: 'INR',
               key: 'rzp_test_P9GGaAXRTQMmea',
-              amount: selectedRide.price * 100,
+              amount: selectedRide.price ,
               name: 'SpotsVista',
               // prefill: {
               //   email: 'user@gmail.com',
