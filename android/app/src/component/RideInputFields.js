@@ -1,22 +1,10 @@
 // RideInputFields.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Modal, Alert, FlatList } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Modal, Alert } from 'react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
+import RideOptions from './RideOptions';
 import RazorpayCheckout from 'react-native-razorpay';
 import Geolocation from '@react-native-community/geolocation';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import RideOptions from './RideOptions';
-
-
-// Separate component for NearbyPlacesList
-const NearbyPlacesList = ({ nearbyPlaces, handleSelectLocation }) => (
-  <FlatList
-    data={nearbyPlaces}
-    keyExtractor={(item) => item.place_id}
-    renderItem={({ item }) => (
-      <Text onPress={() => handleSelectLocation(item)}>{item.name}</Text>
-    )}
-  />
-);
 
 const RideInputFields = () => {
   const [fromLocation, setFromLocation] = useState('');
@@ -24,107 +12,97 @@ const RideInputFields = () => {
   const [selectedRide, setSelectedRide] = useState(null);
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-    locationName: '',
-  });
 
- 
-  const requestLocationPermission = () => {
-    return new Promise((resolve, reject) => {
+  const destinationOptions = ['National Gallery of Modern Art', 'Tipu Sultans Palace and Fort', 'Krishna Rajendra (KR) Market', 'Lalbagh Botanical Garden', 'Cubbon Park', 'Vidhana Soudha', 'Attara Kacheri (High Court) and Surroundings', 'Spiritual and Religious Places', 'Ulsoor Lake, Halasuru', "Sivanchetti Gardens", "Ulsoor Lake", "Halasuru", "Sivanchetti Gardens","Devanahalli Fort", "Nrityagram,Big Banyan Tree","Jakkur Aerodrome",
+    "Wrestling Pit-cum-Restaurant","Mayo Hall,Blossom Book House","Malleswaram And Basavanagudi","Freedom Park","Pyramid Valley","Turahalli Forest","Gandikota Fort"];
+
+
+    
+    const [location, setLocation] = useState({
+      latitude: null,
+      longitude: null,
+      locationName: '',
+    });
+  
+    const requestLocationPermission = () => {
       Geolocation.requestAuthorization(
         () => {
           Geolocation.getCurrentPosition(
             async (position) => {
               const { latitude, longitude } = position.coords;
-
+  
+              // Update state with coordinates
               setLocation({ latitude, longitude, locationName: '' });
-
+  
+              // Call function to get location name
               await getLocationName(latitude, longitude);
-
-              resolve({ latitude, longitude });
+              console.log(latitude, longitude)
             },
             (error) => {
               console.error('Error getting current location:', error);
-              reject(error);
+              // Handle the error or show a message to the user
             }
           );
         },
         (error) => {
           console.error('Error requesting location permission:', error);
-          reject(error);
+          // Handle the error or show a message to the user
         }
       );
-    });
-  };
-
-  const handleSelectLocation = (place) => {
-    setToLocation(place.description);
-  };
-
-  const getLocationName = async (latitude, longitude) => {
-    try {
-      const apiKey = '4a92e86c6073444a93c20b73f2f58285';
-      const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
-
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (data.results.length > 0) {
-        const address = data.results[0].formatted;
-        setLocation((prevLocation) => ({ ...prevLocation, locationName: address }));
-        console.log(address);
-        setFromLocation(address);
-      } else {
-        console.warn('Location not found');
-      }
-    } catch (error) {
-      console.error('Error fetching location name:', error.message);
-    }
-  };
-
-  const fetchNearbyPlaces = async (latitude, longitude) => {
-    try {
-      const apiKey = 'AIzaSyB7r1hAiBtvcqXYL4HWhW4WcXEBb58erVI';
-      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=500&type=restaurant&key=${apiKey}`;
-
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log(data)
-      setNearbyPlaces(data.results);
-    } catch (error) {
-      console.error('Error fetching nearby places:', error.message);
-    }
-  };
-
-  useEffect(() => {
-    const loadCurrentLocation = async () => {
+    };
+  
+    const getLocationName = async (latitude, longitude) => {
       try {
-        // Request location permission and get current location
-        const currentLocation = await requestLocationPermission();
-
-        // Fetch nearby places using obtained location
-        fetchNearbyPlaces(currentLocation.latitude, currentLocation.longitude);
+        const apiKey = '4a92e86c6073444a93c20b73f2f58285';
+        const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
+    
+        const response = await fetch(apiUrl);
+    
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+    
+        const data = await response.json();
+    
+        if (data.results.length > 0) {
+          const address = data.results[0].formatted;
+          setLocation((prevLocation) => ({ ...prevLocation, locationName: address }));
+          console.log(address);
+          setFromLocation(address); // Set fromLocation directly using the updated address
+        } else {
+          console.warn('Location not found');
+        }
       } catch (error) {
-        console.error('Error getting current location:', error.message);
+        console.error('Error fetching location name:', error.message);
       }
     };
-
-    // Load current location on component mount
-    loadCurrentLocation();
-  }, []);
-
+    
+    
+  
+    useEffect(() => {
+      // Call the function to request location permission
+      requestLocationPermission();
+    }, []);
+  
+    
+    // const fetchNearbyPlaces = async (latitude, longitude) => {
+    //   try {
+    //     const apiKey = 'AIzaSyB7r1hAiBtvcqXYL4HWhW4WcXEBb58erVI';
+    //     const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=500&type=restaurant&key=${apiKey}`;
+  
+    //     const response = await fetch(apiUrl);
+  
+    //     if (!response.ok) {
+    //       throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    //     }
+  
+    //     const data = await response.json();
+    //     setNearbyPlaces(data.results);
+    //   } catch (error) {
+    //     console.error('Error fetching nearby places:', error.message);
+    //   }
+    // };
+  
   const handleFromChange = (text) => {
     setFromLocation(text);
   };
@@ -161,9 +139,16 @@ const RideInputFields = () => {
           text: 'OK',
           onPress: async () => {
             const options = {
+              description: `Payment for ${selectedRide.title}`,
               currency: 'INR',
               key: 'rzp_test_P9GGaAXRTQMmea',
+              amount: selectedRide.price * 100,
               name: 'SpotsVista',
+              // prefill: {
+              //   email: 'user@gmail.com',
+              //   contact: '9876543210',
+              //   name: 'user',
+              // },
               theme: { color: '#53a20e' },
             };
 
@@ -187,6 +172,7 @@ const RideInputFields = () => {
       ]
     );
   };
+  
 
   return (
     <View style={styles.container}>
@@ -199,15 +185,19 @@ const RideInputFields = () => {
 
       <Text style={styles.label}>To:</Text>
       <View style={styles.dropdownContainer}>
-        <TextInput
-          placeholder="Type to set location"
-          value={toLocation}
-          onChangeText={(text) => setToLocation(text)}
+        <ModalDropdown
+          options={destinationOptions}
+          onSelect={(index, value) => handleToChange(index, value)}
+          defaultValue="Select destination..."
+          style={styles.dropdown}
+          textStyle={styles.dropdownText}
+          dropdownStyle={styles.dropdownStyle}
+          dropdownTextStyle={styles.dropdownOptionText}
+          dropdownTextHighlightStyle={styles.dropdownOptionTextHighlight}
         />
-
-        {/* Display a list of nearby places */}
-        <NearbyPlacesList nearbyPlaces={nearbyPlaces} handleSelectLocation={handleSelectLocation} />
-
+     
+     
+        
         {toLocation !== '' && (
           <TouchableOpacity style={styles.clearIcon} onPress={handleClearToLocation}>
             <Image source={require('../Image/cancelIcon.png')} style={styles.cancelIcon} />
@@ -220,19 +210,6 @@ const RideInputFields = () => {
           <Text style={styles.buttonText}>Take a Ride</Text>
         </TouchableOpacity>
       )}
-      <GooglePlacesAutocomplete
-        placeholder="Search"
-        onPress={(data, details = null) => {
-          handleSelectLocation(data);
-        }}
-        query={{
-          key: 'AIzaSyB7r1hAiBtvcqXYL4HWhW4WcXEBb58erVI',
-          language: 'en',
-        }}
-        nearbyPlacesAPI="GooglePlacesSearch"
-        enablePoweredByContainer={false}
-        debounce={300}
-      />
 
       <Modal
         visible={isModalVisible}
@@ -291,6 +268,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 10,
     borderRadius: 8,
+  },
+  dropdown: {
+    flex: 1,
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: 'black',
+    padding: 5,
+  },
+  dropdownStyle: {
+    height: 'auto',
+    maxHeight: 200,
+    borderColor: 'blue',
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  dropdownOptionTextHighlight: {
+    color: 'white',
+    backgroundColor: 'blue',
   },
   clearIcon: {
     padding: 10,
