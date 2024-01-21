@@ -1,26 +1,22 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import CardList1 from '../component/CardList1';
-import CardList2 from '../component/CardList2';
-import CardList3 from '../component/CardList3';
-import RideInputFields from '../component/RideInputFields';
+import Header from '../component/Header';
+import Cards from '../component/Cards';
+import NearBySpots from '../component/NearBySpots';
+
+
+
 
 
 const Home = () => {
   return (
-    <ScrollView style={styles.container}>
+  <>
+  <Header/>
+     {/* <Cards/> */}
     
-      <Text style={styles.heading}>SpotsVista</Text>
-      <RideInputFields/>
-     
-      <Text style={styles.heading1}>Commute smarter</Text>
-      <CardList1 />
-      <Text style={styles.heading1}>Save every day</Text>
-      <CardList2 />
-      <Text style={styles.heading1}>More ways to use SpotsVista</Text>
-      <CardList3/>
-      
-    </ScrollView>
+    <NearBySpots/>
+    
+    </>
   );
 };
 
