@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, Text ,Image} from 'react-native';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {View, Text, Image} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {
   setLocation,
@@ -8,32 +8,32 @@ import {
   setNearbyPlaces,
   setMarkers,
 } from '../redux/locationSlice';
-import MapView, { Marker } from 'react-native-maps';
-import { TextInput } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MapView, {Marker} from 'react-native-maps';
+import {TextInput} from 'react-native-paper';
 
 const Header = () => {
   const dispatch = useDispatch();
-  const { locationName, latitude, longitude, markers  } = useSelector((state) => state.location);
-
+  const {locationName, latitude, longitude, markers} = useSelector(
+    state => state.location,
+  );
 
   const requestLocationPermission = () => {
     Geolocation.requestAuthorization(
       () => {
         Geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-            dispatch(setLocation({ latitude, longitude, locationName: '' }));
+          async position => {
+            const {latitude, longitude} = position.coords;
+            dispatch(setLocation({latitude, longitude, locationName: ''}));
             await getLocationName(latitude, longitude);
             await fetchNearbyPlaces(latitude, longitude);
             await fetchMarkers(latitude, longitude);
           },
-          (error) => {
+          error => {
             console.error('Error getting current location:', error);
           },
         );
       },
-      (error) => {
+      error => {
         console.error('Error requesting location permission:', error);
       },
     );
@@ -59,7 +59,6 @@ const Header = () => {
     }
   };
 
- 
   const fetchNearbyPlaces = async (latitude, longitude) => {
     const apiKey = 'AIzaSyAp__xlkv0-fU0iXT_SCReglaAzQQu2R04';
 
@@ -73,18 +72,18 @@ const Header = () => {
       }
 
       const data = await response.json();
-      const places = data.results.map((place) => ({
+      console.log(data)
+      const places = data.results.map(place => ({
         name: place.name,
         description: place.description || 'No description available',
-        image: place.photos && place.photos.length > 0
-          ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${apiKey}`
-          : null,
+        image:
+          place.photos && place.photos.length > 0
+            ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${apiKey}`
+            : null,
         rating: place.rating || null,
-       
       }));
 
       dispatch(setNearbyPlaces(places));
-     
     } catch (error) {
       console.error('Error fetching nearby places:', error.message);
     }
@@ -97,7 +96,7 @@ const Header = () => {
       const response = await fetch(apiUrl);
       const data = await response.json();
       if (data.results) {
-        const newMarkers = data.results.map((result) => ({
+        const newMarkers = data.results.map(result => ({
           id: result.place_id,
           title: result.name,
           coordinates: {
@@ -106,7 +105,6 @@ const Header = () => {
           },
         }));
         dispatch(setMarkers(newMarkers));
-       
       }
     } catch (error) {
       console.error('Error fetching markers:', error);
@@ -116,48 +114,55 @@ const Header = () => {
   useEffect(() => {
     requestLocationPermission();
   }, []);
-  const handleLocationChange = (text) => {
+  const handleLocationChange = text => {
     dispatch(setLocationName(text));
   };
 
   return (
     <View>
-    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: 'white' }}>
-      <Image
-        source={{ uri: 'https://img.freepik.com/free-vector/location_53876-25530.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705708800&semt=ais' }}
-        style={{ width: 25, height: 60, marginRight: 10 }}
-      />
-
-      <TextInput
-        label=" From Location "
-        value={locationName}
-        onChangeText={handleLocationChange}
-        style={{ flex: 1, borderWidth: 0, color: 'black' }}
-      />
-    </View>
-    <View style={{ height: 250, marginTop: 10 }}>
-      {latitude !== '' && longitude !== '' && (
-        <MapView
-          style={{ flex: 1 }}
-          initialRegion={{
-            latitude: Number(latitude),
-            longitude: Number(longitude),
-            latitudeDelta: 0.91,
-            longitudeDelta: 0.81,
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 10,
+          backgroundColor: 'white',
+        }}>
+        <Image
+          source={{
+            uri: 'https://img.freepik.com/free-vector/location_53876-25530.jpg?size=338&ext=jpg&ga=GA1.1.632798143.1705708800&semt=ais',
           }}
-        >
-          {markers.map(marker => (
-            <Marker
-              key={marker.id}
-              coordinate={marker.coordinates}
-              title={marker.title}
-            />
-          ))}
-        </MapView>
-      )}
-    </View>
-  </View>
+          style={{width: 25, height: 60, marginRight: 10}}
+        />
 
+        <TextInput
+          label="  Location "
+          value={locationName}
+          onChangeText={handleLocationChange}
+          style={{ backgroundColor: 'white', }}
+          theme={{ colors: { primary: 'black', background: 'white' } }}
+        />
+      </View>
+      <View style={{height: 200, marginTop: 10}}>
+        {latitude !== '' && longitude !== '' && (
+          <MapView
+            style={{flex: 1}}
+            initialRegion={{
+              latitude: Number(latitude),
+              longitude: Number(longitude),
+              latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+            }}>
+            {markers.map(marker => (
+              <Marker
+                key={marker.id}
+                coordinate={marker.coordinates}
+                title={marker.title}
+              />
+            ))}
+          </MapView>
+        )}
+      </View>
+    </View>
   );
 };
 

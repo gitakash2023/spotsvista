@@ -7,6 +7,9 @@ import Splash from './Splash';
 import LoginScreen from './LoginScreen';
 import SignupScreen from './SignupScreen ';
 import HomeScreen from './HomeScreen';
+import ProfileForm from '../../component/ProfileForm';
+import WelcomeScreen from './WelcomeScreen';
+import RideBook from './RideBook';
 
 const Stack = createStackNavigator();
 const Navigation = () => {
@@ -29,9 +32,24 @@ const Navigation = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen
+          name="ProfileForm"
+          component={ProfileForm}
+          options={{headerShown: false}}
+        />
+         <Stack.Screen
+          name="WelcomeScreen"
+          component={WelcomeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
           name="HomeScreen"
           component={HomeScreen}
           options={{headerShown: false}}
+        />
+         <Stack.Screen
+          name="RideBook"
+          component={RideBook}
+          // options={{headerShown: false}}
         />
        
       </Stack.Navigator>

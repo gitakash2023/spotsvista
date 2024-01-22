@@ -1,6 +1,6 @@
-import { View, Text, Image } from 'react-native';
+import {View, Text, Image} from 'react-native';
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../../bottomTabScreens/Home';
 import Services from '../../bottomTabScreens/Services';
 import Activity from '../../bottomTabScreens/Activity';
@@ -11,8 +11,8 @@ const Tab = createBottomTabNavigator();
 const HomeScreen = () => {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
           let iconSource;
 
           if (route.name === 'Home') {
@@ -44,7 +44,7 @@ const HomeScreen = () => {
             />
           );
         },
-        tabBarLabel: ({ focused, color }) => {
+        tabBarLabel: ({focused, color}) => {
           let label;
           if (route.name === 'Home') {
             label = 'Home';
@@ -61,7 +61,7 @@ const HomeScreen = () => {
               style={{
                 color: color,
                 textAlign: 'center',
-                fontSize: 11, 
+                fontSize: 11,
               }}>
               {label}
             </Text>

@@ -42,7 +42,7 @@ const SignupScreen = () => {
         setIsLodingSignUp(false);
         setEmail('');
         setPassword('');
-        navigation.navigate('HomeScreen');
+        navigation.navigate('ProfileForm');
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
