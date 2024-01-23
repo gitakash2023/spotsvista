@@ -63,7 +63,7 @@ const Header = () => {
     const apiKey = 'AIzaSyAp__xlkv0-fU0iXT_SCReglaAzQQu2R04';
 
     try {
-      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=10000&type=tourist_attraction&key=${apiKey}`;
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1000000&type=tourist_attraction&key=${apiKey}&limit=50`;
 
       const response = await fetch(apiUrl);
 
@@ -143,16 +143,28 @@ const Header = () => {
         />
       </View>
       <View style={{height: 200, marginTop: 10}}>
-        {latitude !== '' && longitude !== '' && (
+       {latitude !== 0 && longitude !== 0 ? (
           <MapView
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             initialRegion={{
               latitude: Number(latitude),
               longitude: Number(longitude),
               latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-            }}>
-            {markers.map(marker => (
+              longitudeDelta: 0.01,
+            }}
+          >
+            {/* Marker for the current location */}
+            <Marker
+              coordinate={{
+                latitude: Number(latitude),
+                longitude: Number(longitude),
+              }}
+              title="Current Location"
+              pinColor="blue" // Customize the marker color if needed
+            />
+
+            {/* Other markers */}
+            {markers.map((marker) => (
               <Marker
                 key={marker.id}
                 coordinate={marker.coordinates}
@@ -160,6 +172,8 @@ const Header = () => {
               />
             ))}
           </MapView>
+        ) : (
+          <Text>No valid location data</Text>
         )}
       </View>
     </View>

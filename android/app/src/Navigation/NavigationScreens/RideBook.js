@@ -5,9 +5,7 @@ import { useSelector } from 'react-redux';
 
 const RideBook = () => {
   const destinationPlace = useSelector((state) => state.destination.destinationPlace);
-  const { locationName, latitude, longitude} = useSelector(
-    (state) => state.location
-  );
+  const { locationName, latitude, longitude } = useSelector((state) => state.location);
 
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -46,9 +44,6 @@ const RideBook = () => {
       const destinationCoords = await fetchDestinationCoordinates(destinationPlace);
       if (destinationCoords) {
         setDestination(destinationCoords);
-
-        const calculatedDistance = calculateDistance(origin, destinationCoords);
-        setDistance(calculatedDistance);
       }
     };
 
@@ -57,6 +52,13 @@ const RideBook = () => {
 
     fetchDestination();
   }, [locationName, destinationPlace]);
+
+  useEffect(() => {
+    if (origin && destination) {
+      const calculatedDistance = calculateDistance(origin, destination);
+      setDistance(calculatedDistance);
+    }
+  }, [origin, destination]);
 
   const calculateDistance = (startCoords, endCoords) => {
     const R = 6371;
@@ -86,18 +88,15 @@ const RideBook = () => {
         <TextInput
           style={styles.input}
           placeholder="Enter Location Name"
+          placeholderTextColor="black"
           value={locationName}
-          onChangeText={(text) => {
-            // Implement logic to update locationName
-          }}
         />
         <TextInput
           style={styles.input}
           placeholder="Enter Destination Place"
+          placeholderTextColor="black"
           value={destinationPlace}
-          onChangeText={(text) => {
-            // Implement logic to update destinationPlace
-          }}
+          
         />
       </View>
 
@@ -123,7 +122,7 @@ const RideBook = () => {
           </MapView>
 
           {distance !== null && (
-            <Text style={styles.distanceText}>{`Distance: ${distance.toFixed(2)} km`}</Text>
+            <Text style={styles.distanceText}>{`Distance: ${Number(distance.toFixed(2))} km`}</Text>
           )}
         </>
       )}
@@ -147,15 +146,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 10,
     paddingLeft: 10,
+    color:"black"
   },
   map: {
     // flex: 1,
-    height:250
+    height: 250,
   },
   distanceText: {
     fontSize: 16,
-    marginTop: 20,
-    color:"black"
+    marginTop: 10,
+    color: "black",
   },
 });
 
