@@ -77,6 +77,7 @@ const LoginScreen = () => {
             placeholder="Enter Your email"
             value={email}
             onChangeText={text => setEmail(text)}
+            placeholderTextColor="black"
             style={styles.textInput}></TextInput>
         </View>
         {email.length > 0 && (
@@ -96,6 +97,7 @@ const LoginScreen = () => {
             placeholder="Enter Your password"
             value={password}
             onChangeText={text => setPassword(text)}
+            placeholderTextColor="black"
             style={styles.textInput}></TextInput>
         </View>
         {password.length > 0 && (
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   textInput: {
-    // marginRight: 100,
+   color:"black"
   },
   cancelicon: {
     width: 20,
@@ -185,6 +187,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontWeight: 'bold',
+    color:"black"
   },
 });
 

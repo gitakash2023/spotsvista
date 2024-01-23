@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 const RideBook = () => {
   const destinationPlace = useSelector((state) => state.destination.destinationPlace);
-  const { locationName, latitude, longitude, markers } = useSelector(
+  const { locationName, latitude, longitude} = useSelector(
     (state) => state.location
   );
 
@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: 16,
     marginTop: 20,
-    // marginLeft:15,
     color:"black"
   },
 });

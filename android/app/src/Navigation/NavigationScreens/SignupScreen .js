@@ -79,7 +79,8 @@ const SignupScreen = () => {
           <TextInput
             placeholder="Enter Your e-mail "
             value={email}
-            onChangeText={text => setEmail(text)}></TextInput>
+            placeholderTextColor="black"
+            onChangeText={text => setEmail(text)} style={styles.textInput}></TextInput>
         </View>
         {email.length > 0 && (
           <View>
@@ -98,6 +99,7 @@ const SignupScreen = () => {
             placeholder="Enter Your password"
             value={password}
             onChangeText={text => setPassword(text)}
+            placeholderTextColor="black"
             style={styles.textInput}></TextInput>
         </View>
         {password.length > 0 && (
@@ -160,6 +162,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 30,
   },
+  textInput:{
+    color:"black"
+  },
   cancelicon: {
     width: 20,
     height: 20,
@@ -183,6 +188,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontWeight: 'bold',
+    color:"black"
   },
 });
 export default SignupScreen;
