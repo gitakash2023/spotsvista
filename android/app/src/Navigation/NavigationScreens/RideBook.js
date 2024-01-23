@@ -4,38 +4,74 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSelector } from 'react-redux';
 
 const RideBook = () => {
-  const locationName = useSelector((state) => state.location.locationName);
   const destinationPlace = useSelector((state) => state.destination.destinationPlace);
+  const { locationName, latitude, longitude, markers } = useSelector(
+    (state) => state.location
+  );
 
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [distance, setDistance] = useState(null);
 
+  const OPEN_CAGE_API_KEY = '4a92e86c6073444a93c20b73f2f58285';
+
+  const fetchDestinationCoordinates = async (placeName) => {
+    try {
+      const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+        placeName
+      )}&key=${OPEN_CAGE_API_KEY}`;
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (data.status.code === 200 && data.total_results > 0) {
+        const location = data.results[0].geometry;
+        return {
+          latitude: location.lat,
+          longitude: location.lng,
+        };
+      } else {
+        console.error('OpenCage API request failed:', data);
+        console.warn(`No results found for place: ${placeName}`);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching destination coordinates:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
-    
-    const originCoords = { latitude: 37.78825, longitude: -122.4324 };
-    const destinationCoords = { latitude: 37.7749, longitude: -122.4194 };
+    const fetchDestination = async () => {
+      const destinationCoords = await fetchDestinationCoordinates(destinationPlace);
+      if (destinationCoords) {
+        setDestination(destinationCoords);
 
+        const calculatedDistance = calculateDistance(origin, destinationCoords);
+        setDistance(calculatedDistance);
+      }
+    };
+
+    const originCoords = { latitude: latitude, longitude: longitude };
     setOrigin(originCoords);
-    setDestination(destinationCoords);
 
-    // Calculate distance using Haversine formula
-    const calculatedDistance = calculateDistance(originCoords, destinationCoords);
-    setDistance(calculatedDistance);
+    fetchDestination();
   }, [locationName, destinationPlace]);
 
-  // Haversine formula to calculate distance between two coordinates in kilometers
   const calculateDistance = (startCoords, endCoords) => {
-    const R = 6371; 
+    const R = 6371;
     const dLat = deg2rad(endCoords.latitude - startCoords.latitude);
     const dLon = deg2rad(endCoords.longitude - startCoords.longitude);
 
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(startCoords.latitude)) * Math.cos(deg2rad(endCoords.latitude)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos(deg2rad(startCoords.latitude)) *
+        Math.cos(deg2rad(endCoords.latitude)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in kilometers
+    const distance = R * c;
 
     return distance;
   };
@@ -51,13 +87,17 @@ const RideBook = () => {
           style={styles.input}
           placeholder="Enter Location Name"
           value={locationName}
-          onChangeText={(text) => {/* Implement logic to update locationName */}}
+          onChangeText={(text) => {
+            // Implement logic to update locationName
+          }}
         />
         <TextInput
           style={styles.input}
           placeholder="Enter Destination Place"
           value={destinationPlace}
-          onChangeText={(text) => {/* Implement logic to update destinationPlace */}}
+          onChangeText={(text) => {
+            // Implement logic to update destinationPlace
+          }}
         />
       </View>
 
@@ -82,7 +122,9 @@ const RideBook = () => {
             />
           </MapView>
 
-          <Text style={styles.distanceText}>{`Distance: ${distance.toFixed(2)} km`}</Text>
+          {distance !== null && (
+            <Text style={styles.distanceText}>{`Distance: ${distance.toFixed(2)} km`}</Text>
+          )}
         </>
       )}
     </View>
@@ -93,30 +135,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  heading: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   inputContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // margin: 10,
   },
   input: {
-    flex: 1,
-    height: 40,
+    // flex: 1,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
-    marginRight: 10,
+    margin: 10,
     paddingLeft: 10,
   },
   map: {
-    flex: 1,
+    // flex: 1,
+    height:250
   },
   distanceText: {
     fontSize: 16,
-    margin: 10,
+    marginTop: 20,
+    // marginLeft:15,
+    color:"black"
   },
 });
 

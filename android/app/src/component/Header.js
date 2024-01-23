@@ -72,7 +72,7 @@ const Header = () => {
       }
 
       const data = await response.json();
-      console.log(data)
+    
       const places = data.results.map(place => ({
         name: place.name,
         description: place.description || 'No description available',
