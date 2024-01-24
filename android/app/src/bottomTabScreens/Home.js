@@ -4,17 +4,21 @@ import Header from '../component/Header';
 
 import NearBySpots from '../component/NearBySpots';
 import ChatScreen from '../Navigation/NavigationScreens/ChatScreen';
+import DriverProfileForm from '../Navigation/NavigationScreens/driver/DriverProfileForm';
+import SignupScreen from '../Navigation/NavigationScreens/SignupScreen ';
+import ProfileForm from '../component/ProfileForm';
+
 
 
 
 const Home = () => {
   return (
     <>
+
    
-   <ChatScreen/>
-      {/* <Header />
+      <Header />
       
-      <NearBySpots /> */}
+      <NearBySpots />
     </>
   );
 };

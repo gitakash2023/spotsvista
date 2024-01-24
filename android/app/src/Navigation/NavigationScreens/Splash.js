@@ -10,13 +10,14 @@ const Splash = () => {
     const user = auth().currentUser;
     // Simulate a delay (3 seconds) before navigating to the appropriate screen
     setTimeout(() => {
-      if (user) {
-        // User is already registered, navigate to Home screen
-        navigation.navigate('HomeScreen');
-      } else {
-        // User is not registered, navigate to Signup screen
-        navigation.navigate('SignupScreen');
-      }
+      // if (user) {
+      //   // User is already registered, navigate to Home screen
+      //   navigation.navigate('HomeScreen');
+      // } else {
+      //   // User is not registered, navigate to Signup screen
+      //   navigation.navigate('SignupScreen');
+      // }
+         navigation.navigate('SelectionScreen');
     }, 2000);
   }, []);
   return (
@@ -32,13 +33,13 @@ const Splash = () => {
 };
 const styles = StyleSheet.create({
   splashIcon: {
-    width: '100%', // Set the image width
-    height: ' 100%', // Set the image height
-    resizeMode: 'contain', // Adjust the resizeMode as needed
+    width: '100%', 
+    height: ' 100%', 
+    resizeMode: 'contain', 
   },
   splashImageContainer: {
     marginTop: 50,
-    alignItems: 'center', // Center horizontally
+    alignItems: 'center', 
   },
 });
 export default Splash;

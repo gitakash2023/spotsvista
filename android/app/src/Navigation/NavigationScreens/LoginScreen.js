@@ -1,15 +1,7 @@
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Button,
-  ActivityIndicator,
-} from 'react-native';
-import React, {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
 const LoginScreen = () => {
@@ -51,143 +43,143 @@ const LoginScreen = () => {
         setIsLodingLogin(false);
       });
   };
+
   const navigateToSignup = () => {
     navigation.navigate('SignupScreen');
   };
+
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.text}>Condidate</Text>
-        <Text style={styles.text}> Sign-In</Text>
-      </View>
+      
       <View>
         <Image
           source={require('../../Image/contactnew.png')}
           style={styles.avatar}
         />
       </View>
-      <View style={styles.regTextMain}>
+      <View style={styles.regTextContainer}>
         <Text style={styles.regText}>
           You will log in after verification if you are not registered
         </Text>
       </View>
-      <View style={styles.inputFieldContainer}>
-        <View>
-          <TextInput
-            placeholder="Enter Your email"
-            value={email}
-            onChangeText={text => setEmail(text)}
-            placeholderTextColor="black"
-            style={styles.textInput}></TextInput>
-        </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Enter Your Email"
+          value={email}
+          placeholderTextColor="black"
+          onChangeText={text => setEmail(text)}
+          style={styles.textInput}
+        />
         {email.length > 0 && (
-          <View>
-            <TouchableOpacity onPress={handleCancelIconPressEmail}>
-              <Image
-                source={require('../../Image/cancelIcon.png')}
-                style={[styles.cancelicon, {marginLeft: 30}]}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={handleCancelIconPressEmail}>
+            <Image
+              source={require('../../Image/cancelIcon.png')}
+              style={styles.cancelIcon}
+            />
+          </TouchableOpacity>
         )}
       </View>
-      <View style={[styles.inputFieldContainer, {marginTop: 10}]}>
-        <View>
-          <TextInput
-            placeholder="Enter Your password"
-            value={password}
-            onChangeText={text => setPassword(text)}
-            placeholderTextColor="black"
-            style={styles.textInput}></TextInput>
-        </View>
+      <View style={[styles.inputContainer, { marginTop: 10 }]}>
+        <TextInput
+          label="Enter Your Password"
+          value={password}
+          onChangeText={text => setPassword(text)}
+          placeholderTextColor="black"
+          style={styles.textInput}
+          secureTextEntry
+        />
         {password.length > 0 && (
-          <View>
-            <TouchableOpacity onPress={handleCancelIconPressPassword}>
-              <Image
-                source={require('../../Image/cancelIcon.png')}
-                style={styles.cancelicon}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={handleCancelIconPressPassword}>
+            <Image
+              source={require('../../Image/cancelIcon.png')}
+              style={styles.cancelIcon}
+            />
+          </TouchableOpacity>
         )}
       </View>
 
-      <View style={styles.LoginView}>
+      <View style={styles.loginButtonContainer}>
         {isLodingLogin ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-          <TouchableOpacity style={styles.LoginButton} onPress={handleLogin}>
-            <Text style={styles.LoginText}>Log in</Text>
-          </TouchableOpacity>
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            style={styles.loginButton}>
+            Log in
+          </Button>
         )}
       </View>
       <View>
         <TouchableOpacity onPress={navigateToSignup}>
-          <Text style={styles.RegisterText}>
-            Don't have a clarity account ? Register now
+          <Text style={styles.registerText}>
+            Don't have a clarity account? Register now
           </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  text: {
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    marginTop: 30,
+    marginLeft: 10,
+  },
+  headerText: {
     color: 'black',
     fontWeight: 'bold',
     fontFamily: 'Roboto',
-  },
-  main: {
-    marginTop: 50,
-    marginLeft: 10,
+    fontSize: 18,
+    marginRight: 10,
   },
   avatar: {
     width: 100,
     height: 100,
     marginTop: 15,
+    alignSelf: 'center',
   },
-  regTextMain: {
+  regTextContainer: {
     marginLeft: 10,
     marginTop: 10,
   },
-  indiaIcon: {
-    width: 40,
-    height: 40,
+  regText: {
+    color: 'black',
+    textAlign: 'center',
   },
-
-  inputFieldContainer: {
+  inputContainer: {
     flexDirection: 'row',
-    marginTop: 50,
+    marginTop: 20,
     justifyContent: 'space-between',
-    marginLeft: 30,
+    marginLeft: 10,
   },
   textInput: {
-   color:"black"
+    flex: 1,
   },
-  cancelicon: {
+  cancelIcon: {
     width: 20,
     height: 20,
     marginRight: 20,
     marginTop: 15,
   },
-  LoginButton: {
-    margin: 10,
+  loginButtonContainer: {
     marginTop: 20,
-    backgroundColor: 'black',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  loginButton: {
     borderRadius: 5,
   },
-  LoginText: {
-    padding: 15,
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'normal',
-    fontFamily: 'Roboto',
-  },
-  RegisterText: {
+  registerText: {
     textAlign: 'center',
     marginTop: 20,
     fontWeight: 'bold',
-    color:"black"
+    color: 'black',
   },
 });
 

@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet ,ActivityIndicator} from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { TextInput, Button, RadioButton } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
-
-
 const ProfileForm = () => {
-    const navigation = useNavigation();
-  const [fullName, setFullName] = useState('');
+  const navigation = useNavigation();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [gender, setGender] = useState('male');
+  const [age, setAge] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleRegistration = async () => {
-   
     try {
-        setLoading(true)
-      await firestore().collection('users').add({
-        fullName: fullName,
+      setLoading(true);
+      await firestore().collection('userProfile').add({
+        firstName: firstName,
+        lastName: lastName,
+        gender: gender,
+        age: age,
         phoneNumber: phoneNumber,
       });
-      setLoading(false)
+      setLoading(false);
       navigation.navigate('WelcomeScreen');
       console.log('Data added to Firestore successfully!');
     } catch (error) {
@@ -34,30 +38,60 @@ const ProfileForm = () => {
       <Text style={styles.description2}>An email address lets us share trip receipts</Text>
 
       <TextInput
-        label="Full Name"
-        value={fullName}
-        onChangeText={(text) => setFullName(text)}
+        label="First Name"
+        value={firstName}
+        onChangeText={(text) => setFirstName(text)}
         style={styles.input}
-        theme={{ colors: { primary: 'blue', background: 'lightgrey' } }}
+        // theme={{ colors: { primary: 'blue', background: 'lightgrey' } }}
       />
 
-<TextInput
-  label="Phone Number"
-  value={phoneNumber}
-  onChangeText={(text) => setPhoneNumber(text)}
-  keyboardType="numeric"
-  style={styles.input}
-  maxLength={10} 
-  theme={{ colors: { primary: 'blue', background: 'lightgrey' } }}
-/>
- 
-      {loading ?(<ActivityIndicator style={styles.activityIndicator} size="large" color="blue" />):(<Button
-        mode="contained"
-        onPress={handleRegistration}
-        style={{ ...styles.button, backgroundColor: 'black', color: 'black' }}
-      >
-       <Text style={{color:"white",fontWeight:"bold"}}> Register</Text>
-      </Button>)}
+      <TextInput
+        label="Last Name"
+        value={lastName}
+        onChangeText={(text) => setLastName(text)}
+        style={styles.input}
+        // theme={{ colors: { primary: 'blue', background: 'lightgrey' } }}
+      />
+
+      <RadioButton.Group onValueChange={(value) => setGender(value)} value={gender}>
+        <View style={styles.radioButtonContainer}>
+          <RadioButton.Item label="Male" value="male" />
+          <RadioButton.Item label="Female" value="female" />
+          {/* Add more gender options as needed */}
+        </View>
+      </RadioButton.Group>
+
+      <TextInput
+        label="Age"
+        value={age}
+        onChangeText={(text) => setAge(text)}
+        keyboardType="numeric"
+        style={styles.input}
+        // theme={{ colors: { primary: 'blue', background: 'lightgrey' } }}
+      />
+
+      <TextInput
+        label="Phone Number"
+        value={phoneNumber}
+        onChangeText={(text) => setPhoneNumber(text)}
+        keyboardType="numeric"
+        maxLength={10}
+        style={styles.input}
+        // theme={{ colors: { primary: 'blue', background: 'lightgrey' } }}
+      />
+
+      {loading ? (
+        <ActivityIndicator style={styles.activityIndicator} size="large" color="blue" />
+      ) : (
+        <Button
+          mode="contained"
+          onPress={handleRegistration}
+          style={styles.button}
+          // style={{ ...styles.button, backgroundColor: 'black', color: 'black' }}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>Save profile</Text>
+        </Button>
+      )}
     </View>
   );
 };
@@ -74,11 +108,11 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 10,
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
   },
   button: {
     marginTop: 20,
-    backgroundColor: 'blue', 
+    // backgroundColor: '',
   },
   description: {
     fontSize: 14,
@@ -90,6 +124,14 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     marginBottom: 20,
     color: 'black',
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 8,
+  },
+  activityIndicator: {
+    marginTop: 20,
   },
 });
 
