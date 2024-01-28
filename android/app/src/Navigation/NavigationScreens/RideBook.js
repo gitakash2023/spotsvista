@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setDistance } from '../../redux/distanceSlice';
+import RideCard from '../../component/RideCard';
 
 const RideBook = () => {
   const destinationPlace = useSelector((state) => state.destination.destinationPlace);
   const { locationName, latitude, longitude } = useSelector((state) => state.location);
+  const distance = useSelector((state) => state.distance.distance);
 
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
-  const [distance, setDistance] = useState(null);
 
   const OPEN_CAGE_API_KEY = '4a92e86c6073444a93c20b73f2f58285';
+  const dispatch = useDispatch(); // Move useDispatch outside the useEffect
 
   const fetchDestinationCoordinates = async (placeName) => {
     try {
@@ -56,9 +59,9 @@ const RideBook = () => {
   useEffect(() => {
     if (origin && destination) {
       const calculatedDistance = calculateDistance(origin, destination);
-      setDistance(calculatedDistance);
+      dispatch(setDistance(calculatedDistance)); // Dispatch the action with useDispatch
     }
-  }, [origin, destination]);
+  }, [origin, destination, dispatch]); // Include dispatch in the dependency array
 
   const calculateDistance = (startCoords, endCoords) => {
     const R = 6371;
@@ -96,7 +99,6 @@ const RideBook = () => {
           placeholder="Enter Destination Place"
           placeholderTextColor="black"
           value={destinationPlace}
-          
         />
       </View>
 
@@ -114,18 +116,17 @@ const RideBook = () => {
             <Marker coordinate={origin} title="Origin" />
             <Marker coordinate={destination} title="Destination" />
 
-            <Polyline
-              coordinates={[origin, destination]}
-              strokeColor="#000"
-              strokeWidth={2}
-            />
+            <Polyline coordinates={[origin, destination]} strokeColor="#000" strokeWidth={2} />
           </MapView>
 
           {distance !== null && (
-            <Text style={styles.distanceText}>{`Distance: ${Number(distance.toFixed(2))} km`}</Text>
+            <Text style={styles.distanceText}>{`Distance: ${Number(
+              distance.toFixed(2)
+            )} km`}</Text>
           )}
         </>
       )}
+      <RideCard/>
     </View>
   );
 };
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 10,
     paddingLeft: 10,
-    color:"black"
+    color: 'black',
   },
   map: {
     // flex: 1,
@@ -154,8 +155,8 @@ const styles = StyleSheet.create({
   },
   distanceText: {
     fontSize: 16,
-    marginTop: 10,
-    color: "black",
+    margin: 10,
+    color: 'blue',
   },
 });
 

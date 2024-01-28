@@ -16,6 +16,7 @@ import DriverProfileForm from './driver/DriverProfileForm';
 import SelectionScreen from './SelectionScreen';
 import DriverWelcome from './driver/DriverWelcom';
 import DriverHome from './driver/DriverHome';
+import PreferredDrivers from './PrefferedDrivers';
 
 const Stack = createStackNavigator();
 const Navigation = () => {
@@ -149,6 +150,18 @@ const Navigation = () => {
          <Stack.Screen
           name="DriverHome"
           component={DriverHome}
+          options={{
+            headerStyle: {
+              height: 40,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="PreferredDrivers"
+          component={PreferredDrivers}
           options={{
             headerStyle: {
               height: 40,
