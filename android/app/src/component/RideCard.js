@@ -2,10 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
+import RazorpayCheckout from 'react-native-razorpay';
 
 
 const RideCard = () => {
-    const navigation = useNavigation();
+ const navigation = useNavigation();
   const cars = [
     { id: 1, name: 'UrbanRideExpress', imageUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJbpcOjELFQj6z383VZEmnzz-1zxpx-tFo7FeAPOs9r5CSwXFqJoQ2HdFpSMze4kd3x6M&usqp=CAU' },
     { id: 2, name: 'CityNavigator', imageUri: 'https://www.picng.com/upload/taxi/png_taxi_23235.png' },
@@ -36,13 +37,38 @@ const RideCard = () => {
         {
           text: 'Confirm',
           onPress: () => {
-           navigation.navigate("PreferredDrivers")
+            // Call the function to initiate Razorpay payment
+            initiateRazorpayPayment(car.name, ridePrice);
           },
         },
       ],
       { cancelable: false }
     );
   };
+
+  const initiateRazorpayPayment = (carName, ridePrice) => {
+    const options = {
+      description: `Payment for your ride with ${carName}`,
+      
+      currency: 'INR', 
+      key: 'rzp_test_P9GGaAXRTQMmea',
+      amount: ridePrice * 100, 
+      name: 'SpotsVista',
+     
+      theme: { color: '#F37254' }, 
+    };
+
+    RazorpayCheckout.open(options)
+      .then((data) => {
+        console.log(`Payment Successful: ${JSON.stringify(data)}`);
+        
+      })
+      .catch((error) => {
+        console.error('Razorpay Error:', error.description);
+       
+      });
+  };
+
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, Alert, StyleSheet, ScrollView, Pressable } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { ScrollView } from 'react-native-gesture-handler';
+import Modal from 'react-native-modal';
 
-const PreferredDrivers = () => {
+const PreferredDrivers = ({ onSelectDriver }) => {
   const [driverData, setDriverData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDriver, setSelectedDriver] = useState(null);
 
   const retrieveDrivers = () => {
     const user = auth().currentUser;
@@ -41,23 +42,39 @@ const PreferredDrivers = () => {
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
+      <Modal
+        isVisible={selectedDriver !== null}
+        onBackdropPress={() => setSelectedDriver(null)}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        style={styles.modal}
+      >
         <ScrollView>
-        <View>
-          {driverData.map(driver => (
-            <View key={driver.id} style={styles.driverCard}>
-              <Text style={[styles.driverName, styles.textColorBlack]}>{`${driver.firstName} ${driver.lastName}`}</Text>
-              <Text style={[styles.driverDetail, styles.textColorBlack]}>Gender: {driver.gender}</Text>
-              <Text style={[styles.driverDetail, styles.textColorBlack]}>Age: {driver.age}</Text>
-              <Text style={[styles.driverDetail, styles.textColorBlack]}>Phone Number: {driver.phoneNumber}</Text>
-              {/* Add other driver details as needed */}
-            </View>
-          ))}
-        </View>
+          <View>
+            {driverData.map(driver => (
+              <Pressable
+                key={driver.id}
+                style={styles.driverCard}
+                onPress={() => {
+                  setSelectedDriver(driver);
+                  onSelectDriver(driver);
+                }}
+              >
+                <Text style={[styles.driverName, styles.textColorBlack]}>{`${driver.firstName} ${driver.lastName}`}</Text>
+                <Text style={[styles.driverDetail, styles.textColorBlack]}>Gender: {driver.gender}</Text>
+                <Text style={[styles.driverDetail, styles.textColorBlack]}>Age: {driver.age}</Text>
+                <Text style={[styles.driverDetail, styles.textColorBlack]}>Phone Number: {driver.phoneNumber}</Text>
+              </Pressable>
+            ))}
+          </View>
         </ScrollView>
-      )}
+      </Modal>
+
+      <View style={styles.buttonContainer}>
+        <Pressable onPress={() => setSelectedDriver(true)}>
+          <Text style={styles.buttonText}>Select Preferred Driver</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -86,6 +103,19 @@ const styles = StyleSheet.create({
   },
   textColorBlack: {
     color: 'black',
+  },
+  modal: {
+    margin: 0,
+    justifyContent: 'flex-end',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginTop: 20,
   },
 });
 
