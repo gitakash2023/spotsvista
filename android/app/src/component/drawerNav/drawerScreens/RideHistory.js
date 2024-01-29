@@ -38,11 +38,10 @@ const RideHistory = () => {
         <ScrollView>
           {rideHistory.map(ride => (
             <View key={ride.id} style={styles.rideCard}>
-              <Text style={styles.rideDetail}>Car Name: {ride.carName}</Text>
-              <Text style={styles.rideDetail}>Ride Price: {ride.ridePrice}</Text>
-              <Text style={styles.rideDetail}>Origin: {ride.origin}</Text>
-              <Text style={styles.rideDetail}>Destination: {ride.destination}</Text>
-             
+              <Text style={[styles.rideDetail, styles.textColorBlack]}>Car Name: {ride.carName}</Text>
+              <Text style={[styles.rideDetail, styles.textColorBlack]}>Ride Price: {ride.ridePrice}</Text>
+              <Text style={[styles.rideDetail, styles.textColorBlack]}>Origin: {ride.origin}</Text>
+              <Text style={[styles.rideDetail, styles.textColorBlack]}>Destination: {ride.destination}</Text>
             </View>
           ))}
         </ScrollView>
@@ -67,6 +66,9 @@ const styles = StyleSheet.create({
   rideDetail: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  textColorBlack: {
+    color: 'black',
   },
 });
 
