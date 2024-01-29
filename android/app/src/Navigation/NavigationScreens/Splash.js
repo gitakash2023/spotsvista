@@ -2,25 +2,30 @@ import {View, Text, Image, StyleSheet} from 'react-native';
 import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const Splash = () => {
   const navigation = useNavigation();
   useEffect(() => {
-    // Check if the user is already authenticated (registered)
     const user = auth().currentUser;
-    // Simulate a delay (3 seconds) before navigating to the appropriate screen
-    setTimeout(() => {
-      // if (user) {
-      //   // User is already registered, navigate to Home screen
-      //   navigation.navigate('HomeScreen');
-      // } else {
-      //   // User is not registered, navigate to Signup screen
-      //   navigation.navigate('SignupScreen');
-      // }
-         navigation.navigate('SelectionScreen');
-        //  navigation.navigate('HomeScreen');
+    setTimeout(async () => {
+      if (user) {
+        const userDoc = await firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get();
+        const userRole = userDoc.data()?.role;
+        if (userRole === 'driver') {
+          navigation.navigate('DriverHome');
+        } else {
+          navigation.navigate('HomeScreen');
+        }
+      } else {
+        navigation.navigate('SelectionScreen');
+      }
     }, 2000);
   }, []);
+
   return (
     <View>
       <View style={styles.splashImageContainer}>
@@ -32,15 +37,17 @@ const Splash = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   splashIcon: {
-    width: '100%', 
-    height: ' 100%', 
-    resizeMode: 'contain', 
+    width: '100%',
+    height: ' 100%',
+    resizeMode: 'contain',
   },
   splashImageContainer: {
     marginTop: 50,
-    alignItems: 'center', 
+    alignItems: 'center',
   },
 });
+
 export default Splash;

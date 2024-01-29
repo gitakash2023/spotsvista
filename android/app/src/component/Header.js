@@ -5,7 +5,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {
   setLocation,
   setLocationName,
-  setNearbyPlaces,
+  setPlaces,
   setMarkers,
 } from '../redux/locationSlice';
 import MapView, {Marker} from 'react-native-maps';
@@ -25,7 +25,7 @@ const Header = () => {
             const {latitude, longitude} = position.coords;
             dispatch(setLocation({latitude, longitude, locationName: ''}));
             await getLocationName(latitude, longitude);
-            await fetchNearbyPlaces(latitude, longitude);
+            await fetchPlaces(latitude, longitude);
             await fetchMarkers(latitude, longitude);
           },
           error => {
@@ -59,11 +59,11 @@ const Header = () => {
     }
   };
 
-  const fetchNearbyPlaces = async (latitude, longitude) => {
+  const fetchPlaces = async (latitude, longitude) => {
     const apiKey = 'AIzaSyAp__xlkv0-fU0iXT_SCReglaAzQQu2R04';
 
     try {
-      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1000000&type=tourist_attraction&key=${apiKey}&limit=50`;
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/search/json?location=${latitude},${longitude}&radius=1000000&type=tourist_attraction&key=${apiKey}&limit=50`;
 
       const response = await fetch(apiUrl);
 
@@ -83,16 +83,16 @@ const Header = () => {
         rating: place.rating || null,
       }));
 
-      dispatch(setNearbyPlaces(places));
+      dispatch(setPlaces(places));
     } catch (error) {
-      console.error('Error fetching nearby places:', error.message);
+      console.error('Error fetching  places:', error.message);
     }
   };
 
   const fetchMarkers = async (latitude, longitude) => {
     try {
       const apiKey = 'AIzaSyAp__xlkv0-fU0iXT_SCReglaAzQQu2R04';
-      const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=500&type=restaurant&key=${apiKey}`;
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/search/json?location=${latitude},${longitude}&radius=500&type=restaurant&key=${apiKey}`;
       const response = await fetch(apiUrl);
       const data = await response.json();
       if (data.results) {

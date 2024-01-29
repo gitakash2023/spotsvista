@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
 const DriverSignup = () => {
@@ -12,24 +13,35 @@ const DriverSignup = () => {
   const isMounted = useRef(true);
   const navigation = useNavigation();
 
-  const handleSignup = async () => {
+  const handleDriverSignup = async () => {
     setLoading(true);
-
+  
     try {
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-
+  
+      
+      const additionalUserInfo = {
+        email: userCredential.user.email,
+        role: 'driver',  
+      
+      };
+  
+     
+      await firestore().collection('drivers').doc(userCredential.user.uid).set(additionalUserInfo);
+  
       navigation.navigate('DriverProfileForm');
-
-      console.log('User signed up successfully!', userCredential.user.uid);
+  
+      console.log('Driver signed up successfully!', userCredential.user.uid);
     } catch (error) {
       console.error('Error signing up:', error.message);
-      // Handle the error as needed
+      
     } finally {
       if (isMounted.current) {
         setLoading(false);
       }
     }
   };
+  
 
   // Cleanup the component to avoid state updates on unmounted component
   useEffect(() => {
@@ -60,7 +72,7 @@ const DriverSignup = () => {
         mode="outlined"
         style={styles.input}
       />
-      <Button mode="contained" onPress={handleSignup} style={styles.button} disabled={loading}>
+      <Button mode="contained" onPress={handleDriverSignup} style={styles.button} disabled={loading}>
         {loading ? <ActivityIndicator color="white" /> : 'Sign Up'}
       </Button>
       <Text style={styles.loginText} onPress={handleLoginPress}>

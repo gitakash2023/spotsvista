@@ -17,6 +17,7 @@ import SelectionScreen from './SelectionScreen';
 import DriverWelcome from './driver/DriverWelcom';
 import DriverHome from './driver/DriverHome';
 import PreferredDrivers from './PrefferedDrivers';
+import ChatScreen from './ChatScreen';
 
 const Stack = createStackNavigator();
 const Navigation = () => {
@@ -167,7 +168,20 @@ const Navigation = () => {
             },
           }}
         />
+         <Stack.Screen
+          name="ChatScreen"
+          component={ChatScreen}
+          options={{
+            headerStyle: {
+              height: 40,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+            },
+          }}
+        />
       </Stack.Navigator>
+      
     </NavigationContainer>
   );
 };

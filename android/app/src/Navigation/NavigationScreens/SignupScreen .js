@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -27,26 +27,34 @@ const SignupScreen = () => {
     setIsLodingSignUp(true);
     auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('User account created & signed in!');
+      .then(async (userCredential) => {
+       
+        const additionalUserInfo = {
+          email: userCredential.user.email,
+          role: 'user',  
+          
+        };
+        await firestore().collection('users').doc(userCredential.user.uid).set(additionalUserInfo);
+  
+        Alert.alert('User account created & signed in!');
         setIsLodingSignUp(false);
         setEmail('');
         setPassword('');
         navigation.navigate('ProfileForm');
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
+          Alert.alert('That email address is already in use!');
         }
-
+  
         if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
+         Alert.alert('That email address is invalid!');
         }
-      })
-      .finally(() => {
+  
         setIsLodingSignUp(false);
       });
   };
+  
 
   return (
     <View style={styles.container}>
