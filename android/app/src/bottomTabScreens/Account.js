@@ -1,14 +1,15 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import Logout from './accountTab/Logout'
-import UserProfile from './accountTab/UserProfile'
+import DrawerNav from '../component/drawerNav/DrawerNav'
+
+
 
 
 const Account = () => {
   return (
     <>
-    <UserProfile/>
-   <Logout/>
+   
+   <DrawerNav/>
    </>
   )
 }

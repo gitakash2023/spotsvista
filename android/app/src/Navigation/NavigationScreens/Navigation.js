@@ -92,12 +92,8 @@ const Navigation = () => {
           name="HomeScreen"
           component={HomeScreen}
           options={{
-            headerStyle: {
-              height: 40,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-            },
+           headerShown:false
+
           }}
         />
         <Stack.Screen

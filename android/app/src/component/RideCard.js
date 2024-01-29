@@ -3,7 +3,8 @@ import React from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 import RazorpayCheckout from 'react-native-razorpay';
-
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const RideCard = () => {
  const navigation = useNavigation();
@@ -18,7 +19,7 @@ const RideCard = () => {
   const distance = useSelector((state) => state.distance.distance);
 
   const calculateRidePrice = () => {
-    const pricePerKilometer = 12;
+    const pricePerKilometer = 10;
     return distance ? distance * pricePerKilometer : 0;
   };
 
@@ -49,26 +50,47 @@ const RideCard = () => {
   const initiateRazorpayPayment = (carName, ridePrice) => {
     const options = {
       description: `Payment for your ride with ${carName}`,
-      
       currency: 'INR', 
       key: 'rzp_test_P9GGaAXRTQMmea',
-      amount: ridePrice * 100, 
+      amount: (ridePrice * 100).toFixed(0),
       name: 'SpotsVista',
-     
       theme: { color: '#F37254' }, 
     };
 
     RazorpayCheckout.open(options)
       .then((data) => {
         console.log(`Payment Successful: ${JSON.stringify(data)}`);
-        
+        // Update ride history in Firebase
+        updateRideHistory(carName, ridePrice);
+        console.log("added ride history")
       })
       .catch((error) => {
         console.error('Razorpay Error:', error.description);
-       
       });
   };
 
+  const updateRideHistory = async (carName, ridePrice) => {
+    const user = auth().currentUser;
+
+    if (user) {
+      try {
+       
+        await firestore().collection('ridehistory').add({
+          userId: user.uid,
+          carName,
+          ridePrice,
+          origin: origin.locationName,
+          destination: destination,
+          timestamp: firestore.FieldValue.serverTimestamp(),
+        });
+        navigation.navigate("HomeScreen")
+
+       
+      } catch (error) {
+        console.error('Error updating ride history:', error.message);
+      }
+    }
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -86,6 +108,7 @@ const RideCard = () => {
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
