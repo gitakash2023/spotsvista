@@ -17,7 +17,7 @@ import SelectionScreen from './SelectionScreen';
 import DriverWelcome from './driver/DriverWelcom';
 import DriverHome from './driver/DriverHome';
 import PreferredDrivers from './PrefferedDrivers';
-import ChatScreen from './ChatScreen';
+import ChatScreen from './UserChat';
 
 const Stack = createStackNavigator();
 const Navigation = () => {

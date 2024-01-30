@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'; // Add this import statement
 
 const SignupScreen = () => {
   const navigation = useNavigation();
@@ -28,14 +29,12 @@ const SignupScreen = () => {
     auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async (userCredential) => {
-       
         const additionalUserInfo = {
           email: userCredential.user.email,
-          role: 'user',  
-          
+          role: 'user',
         };
         await firestore().collection('users').doc(userCredential.user.uid).set(additionalUserInfo);
-  
+
         Alert.alert('User account created & signed in!');
         setIsLodingSignUp(false);
         setEmail('');
@@ -46,11 +45,11 @@ const SignupScreen = () => {
         if (error.code === 'auth/email-already-in-use') {
           Alert.alert('That email address is already in use!');
         }
-  
+
         if (error.code === 'auth/invalid-email') {
-         Alert.alert('That email address is invalid!');
+          Alert.alert('That email address is invalid!');
         }
-  
+
         setIsLodingSignUp(false);
       });
   };
