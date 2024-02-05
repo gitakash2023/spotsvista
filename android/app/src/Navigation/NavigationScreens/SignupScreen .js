@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore'; // Add this import statement
+import firestore from '@react-native-firebase/firestore'; 
 
 const SignupScreen = () => {
   const navigation = useNavigation();

@@ -5,7 +5,7 @@ import auth from '@react-native-firebase/auth';
 
 const ChatDriverScreen = () => {
   const [messages, setMessages] = useState([]);
-  const driver = auth().currentUser; // Replace with your driver authentication logic
+  const driver = auth().currentUser; 
   console.log(driver.uid);
 
   useEffect(() => {
