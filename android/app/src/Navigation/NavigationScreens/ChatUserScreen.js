@@ -1,56 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { useFirestore } from '@react-native-firebase/firestore';
-import { useAuth } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
-const UserChatScreen = ({ route }) => {
-  const { user } = useAuth();
+const ChatUserScreen = () => {
   const [messages, setMessages] = useState([]);
-  const firestore = useFirestore();
-  const driverId = 'ycUH0GuWi6eolL9MiEtWN1yV9Yv1';
-  console.log(user.uid);
+  const user = auth().currentUser;
+  console.log(user.uid)
 
   useEffect(() => {
-    const chatId = getChatId(user.uid, driverId);
-
-    const unsubscribe = firestore
-      .collection('chats')
-      .doc(chatId)
+    const unsubscribe = firestore()
       .collection('messages')
       .orderBy('createdAt', 'desc')
       .onSnapshot((snapshot) => {
         const messages = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
-            ...data,
-            createdAt: data.createdAt.toDate(),
+            _id: doc.id,
+            text: data.text,
+            createdAt: data.createdAt ? data.createdAt.toDate() : null, 
+            user: data.user,
           };
         });
         setMessages(messages);
       });
 
     return () => unsubscribe();
-  }, [firestore, user.uid, driverId]);
+  }, []);
 
-  const onSend = async (newMessages = []) => {
-    const chatId = getChatId(user.uid, driverId);
+  const onSend = useCallback(async (newMessages = []) => {
+    const message = newMessages[0];
 
-    await firestore
-      .collection('chats')
-      .doc(chatId)
-      .collection('messages')
-      .add({
-        ...newMessages[0],
-        createdAt: new Date(),
-      });
-  };
+    // Save the message to Firestore
+    await firestore().collection('messages').add({
+      text: message.text,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+      user: {
+        _id: user.uid,
+        
+      },
+    });
+  }, [user]);
 
-  return <GiftedChat messages={messages} onSend={(newMessages) => onSend(newMessages)} user={{ _id: user.uid }} />;
+  return (
+    <GiftedChat
+      messages={messages}
+      onSend={(newMessages) => onSend(newMessages)}
+      user={{
+        _id: user.uid,
+        name: user.displayName,
+        avatar: user.photoURL,
+      }}
+    />
+  );
 };
 
-const getChatId = (userId1, userId2) => {
-  const sortedIds = [userId1, userId2].sort();
-  return sortedIds.join('_');
-};
-
-export default UserChatScreen;
+export default ChatUserScreen;
