@@ -5,7 +5,7 @@ import auth from '@react-native-firebase/auth';
 
 const DriverChat = () => {
   const navigation = useNavigation();
-
+console.log(auth().currentUser.uid)
   const startChatWithUser = () => {
     // Replace 'User123' with the actual user ID or a unique identifier
     navigation.navigate('ChatScreen', { driverId: auth().currentUser.uid, userId: 'User123' });

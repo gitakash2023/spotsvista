@@ -1,57 +1,56 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { useFirestore } from '@react-native-firebase/firestore';
+import { useAuth } from '@react-native-firebase/auth';
 
-const ChatUserScreen = () => {
+const UserChatScreen = ({ route }) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState([]);
-  const user = auth().currentUser;
+  const firestore = useFirestore();
+  const driverId = 'ycUH0GuWi6eolL9MiEtWN1yV9Yv1';
+  console.log(user.uid);
 
   useEffect(() => {
-    const unsubscribe = firestore()
+    const chatId = getChatId(user.uid, driverId);
+
+    const unsubscribe = firestore
+      .collection('chats')
+      .doc(chatId)
       .collection('messages')
       .orderBy('createdAt', 'desc')
       .onSnapshot((snapshot) => {
         const messages = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
-            _id: doc.id,
-            text: data.text,
-            createdAt: data.createdAt ? data.createdAt.toDate() : null, 
-            user: data.user,
+            ...data,
+            createdAt: data.createdAt.toDate(),
           };
         });
         setMessages(messages);
       });
 
     return () => unsubscribe();
-  }, []);
+  }, [firestore, user.uid, driverId]);
 
-  const onSend = useCallback(async (newMessages = []) => {
-    const message = newMessages[0];
+  const onSend = async (newMessages = []) => {
+    const chatId = getChatId(user.uid, driverId);
 
-    // Save the message to Firestore
-    await firestore().collection('messages').add({
-      text: message.text,
-      createdAt: firestore.FieldValue.serverTimestamp(),
-      user: {
-        _id: user.uid,
-        
-      },
-    });
-  }, [user]);
+    await firestore
+      .collection('chats')
+      .doc(chatId)
+      .collection('messages')
+      .add({
+        ...newMessages[0],
+        createdAt: new Date(),
+      });
+  };
 
-  return (
-    <GiftedChat
-      messages={messages}
-      onSend={(newMessages) => onSend(newMessages)}
-      user={{
-        _id: user.uid,
-        name: user.displayName,
-        avatar: user.photoURL,
-      }}
-    />
-  );
+  return <GiftedChat messages={messages} onSend={(newMessages) => onSend(newMessages)} user={{ _id: user.uid }} />;
 };
 
-export default ChatUserScreen;
+const getChatId = (userId1, userId2) => {
+  const sortedIds = [userId1, userId2].sort();
+  return sortedIds.join('_');
+};
+
+export default UserChatScreen;
