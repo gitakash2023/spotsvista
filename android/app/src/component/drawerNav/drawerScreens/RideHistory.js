@@ -36,12 +36,13 @@ const RideHistory = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <ScrollView>
-          {rideHistory.map(ride => (
-            <View key={ride.id} style={styles.rideCard}>
-              <Text style={[styles.rideDetail, styles.textColorBlack]}>Car Name: {ride.carName}</Text>
-              <Text style={[styles.rideDetail, styles.textColorBlack]}>Ride Price: {ride.ridePrice}</Text>
-              <Text style={[styles.rideDetail, styles.textColorBlack]}>Origin: {ride.origin}</Text>
-              <Text style={[styles.rideDetail, styles.textColorBlack]}>Destination: {ride.destination}</Text>
+          {rideHistory.map((ride, index) => (
+            <View key={index} style={styles.rideCard}>
+              <Text style={[styles.rideDetail, styles.carName]}>Car Name: {ride.carName}</Text>
+              <Text style={[styles.rideDetail, styles.origin]}>Origin: {ride.origin}</Text>
+              <Text style={[styles.rideDetail, styles.destination]}>Destination: {ride.destination}</Text>
+              <Text style={[styles.rideDetail, styles.ridePrice]}>Ride Price: {ride.ridePrice}</Text>
+
             </View>
           ))}
         </ScrollView>
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+    backgroundColor: '#f0f0f0', // Background color
   },
   rideCard: {
     backgroundColor: '#fff',
@@ -67,8 +69,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
-  textColorBlack: {
-    color: 'black',
+  carName: {
+    color: '#3498db', 
+  },
+  ridePrice: {
+    color: '#27ae60', 
+  },
+  origin: {
+    color: '#e74c3c', 
+  },
+  destination: {
+    color: '#9b59b6', 
   },
 });
 

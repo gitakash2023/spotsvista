@@ -160,7 +160,7 @@ const Header = () => {
                 longitude: Number(longitude),
               }}
               title="Current Location"
-              pinColor="blue" // Customize the marker color if needed
+              pinColor="blue" 
             />
 
             {/* Other markers */}

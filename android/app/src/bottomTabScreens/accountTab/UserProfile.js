@@ -4,27 +4,26 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const retrieveProfile = () => {
     const user = auth().currentUser;
-    // console.log(user.email)
-  
+
     if (user) {
+      const userUID = user.uid;
+
       firestore()
         .collection('userProfile')
-        // .where('userId', '==', user.email)  
+        .where('userId', '==', userUID)
         .get()
         .then(querySnapshot => {
-          const data = [];
-          querySnapshot.forEach(documentSnapshot => {
-            const documentData = documentSnapshot.data();
-            documentData.id = documentSnapshot.id;
-            data.push(documentData);
-          });
-          // console.log(data)
-          setUserData(data);
+          if (!querySnapshot.empty) {
+            const documentData = querySnapshot.docs[0].data();
+            setUserData(documentData);
+          } else {
+            Alert.alert("User profile not found.");
+          }
           setLoading(false);
         })
         .catch(error => {
@@ -33,6 +32,7 @@ const UserProfile = () => {
         });
     } else {
       setLoading(false);
+      Alert.alert("User not logged in.");
     }
   };
 
@@ -41,22 +41,24 @@ const UserProfile = () => {
   }, []);
 
   return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  {loading ? (
+    <ActivityIndicator size="large" />
+  ) : (
     <View>
-      {loading ? (
-        <ActivityIndicator size="large" />
-      ) : (
+      {userData ? (
         <View>
-          {userData.map(user => (
-            <View key={user.id}>
-              <Text>Name: {user.firstName}</Text>
-            
-              
-            </View>
-          ))}
-          
+          <Text style={{ textAlign: 'center',color:"black" }}>firstName: {userData.firstName}</Text>
+          <Text style={{ textAlign: 'center',color:"black" }}>lastName: {userData.lastName}</Text>
+      
         </View>
+      ) : (
+        <Text>User profile not found.</Text>
       )}
     </View>
+  )}
+</View>
+
   );
 };
 

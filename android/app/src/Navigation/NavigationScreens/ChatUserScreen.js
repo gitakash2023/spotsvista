@@ -31,7 +31,7 @@ const ChatUserScreen = () => {
   const onSend = useCallback(async (newMessages = []) => {
     const message = newMessages[0];
 
-    // Save the message to Firestore
+    
     await firestore().collection('messages').add({
       text: message.text,
       createdAt: firestore.FieldValue.serverTimestamp(),
