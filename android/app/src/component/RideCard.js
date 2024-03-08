@@ -20,7 +20,7 @@ const RideCard = () => {
 
   const calculateRidePrice = () => {
     const pricePerKilometer = 10;
-    return distance ? distance * pricePerKilometer : 0;
+    return distance ? distance * pricePerKilometer : 10;
   };
 
   const handleCardPress = (car) => {

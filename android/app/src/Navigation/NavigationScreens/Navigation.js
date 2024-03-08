@@ -18,6 +18,7 @@ import DriverWelcome from './driver/DriverWelcom';
 import DriverHome from './driver/DriverHome';
 import PreferredDrivers from './PrefferedDrivers';
 import ChatScreen from './UserChat';
+import BookFutureRide from './BookFutureRide';
 
 const Stack = createStackNavigator();
 const Navigation = () => {
@@ -94,6 +95,14 @@ const Navigation = () => {
           component={HomeScreen}
           options={{
            headerShown:false
+
+          }}
+        />
+         <Stack.Screen
+          name="BookFutureRide"
+          component={BookFutureRide}
+          options={{
+           headerShown:true
 
           }}
         />
