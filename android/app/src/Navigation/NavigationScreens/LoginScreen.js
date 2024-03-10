@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState} from 'react';
+import {View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {TextInput, Text, Button, ActivityIndicator} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
 const LoginScreen = () => {
@@ -50,7 +50,6 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      
       <View>
         <Image
           source={require('../../Image/contactnew.png')}
@@ -79,7 +78,7 @@ const LoginScreen = () => {
           </TouchableOpacity>
         )}
       </View>
-      <View style={[styles.inputContainer, { marginTop: 10 }]}>
+      <View style={[styles.inputContainer, {marginTop: 10}]}>
         <TextInput
           label="Enter Your Password"
           value={password}

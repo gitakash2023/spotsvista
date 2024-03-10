@@ -1,110 +1,130 @@
-// DriverSignup.js
-import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, KeyboardAvoidingView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
 
-const DriverSignup = () => {
+export default function DriverSignup({ navigation }) {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
-  const isMounted = useRef(true);
-  const navigation = useNavigation();
 
-  const handleDriverSignup = async () => {
+  const userSignup = async () => {
     setLoading(true);
-  
+    if (!email || !password || !name || !phoneNumber) {
+      alert('Please fill in all the fields');
+      setLoading(false);
+      return;
+    }
     try {
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-  
-      
-      const additionalUserInfo = {
-        email: userCredential.user.email,
-        role: 'driver',  
-      
-      };
-  
-     
-      await firestore().collection('drivers').doc(userCredential.user.uid).set(additionalUserInfo);
-  
-      navigation.navigate('DriverProfileForm');
-  
-      console.log('Driver signed up successfully!', userCredential.user.uid);
-    } catch (error) {
-      console.error('Error signing up:', error.message);
-      
-    } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
+      const result = await auth().createUserWithEmailAndPassword(email, password);
+      await firestore().collection('allUsers').doc(result.user.uid).set({
+        name: name,
+        email: result.user.email,
+        phoneNumber: phoneNumber,
+        uid: result.user.uid,
+        role: 'driver',
+        status: 'online',
+      });
+      setLoading(false);
+      navigation.navigate('DriverWelcome'); 
+    } catch (err) {
+      alert('Something went wrong');
+      setLoading(false);
     }
   };
-  
 
-  // Cleanup the component to avoid state updates on unmounted component
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const handleLoginPress = () => {
-    navigation.navigate('DriverLogin');
-  };
+  if (loading) {
+    return <ActivityIndicator size="large" color="#00ff00" />;
+  }
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../../../Image/account.png')} style={styles.logo} />
-      <TextInput
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        mode="outlined"
-        style={styles.input}
-      />
-      <TextInput
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        mode="outlined"
-        style={styles.input}
-      />
-      <Button mode="contained" onPress={handleDriverSignup} style={styles.button} disabled={loading}>
-        {loading ? <ActivityIndicator color="white" /> : 'Sign Up'}
-      </Button>
-      <Text style={styles.loginText} onPress={handleLoginPress}>
-        Already have an account? Login
-      </Text>
-    </View>
+    <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <View style={styles.box1}>
+        <Text style={styles.text}>Welcome to SpotsVista</Text>
+        <Image style={styles.img} source={require('../../../Image/contactnew.png')} />
+      </View>
+      <View style={styles.box2}>
+        <TextInput
+          label="Email"
+          value={email}
+          onChangeText={text => setEmail(text)}
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Password"
+          value={password}
+          onChangeText={text => setPassword(text)}
+          mode="outlined"
+          secureTextEntry
+          style={styles.input}
+        />
+        <TextInput
+          label="Name"
+          value={name}
+          onChangeText={text => setName(text)}
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Phone Number"
+          value={phoneNumber}
+          onChangeText={text => setPhoneNumber(text)}
+          mode="outlined"
+          keyboardType="phone-pad"
+          style={styles.input}
+        />
+        <Button mode="contained" onPress={userSignup} style={styles.button}>
+          Signup
+        </Button>
+        <TouchableOpacity onPress={() => navigation.navigate("DriverLogin")}>
+          <Text style={styles.loginText}>Already have an account?</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 16,
+    backgroundColor: '#fff',
+    padding: 20,
   },
-  logo: {
-    width: 150, 
-    height: 150, 
+  text: {
+    fontSize: 22,
+    color: 'green',
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  img: {
+    width: 200,
+    height: 200,
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
+    borderRadius: 100, // Making the image rounded
+  },
+  box1: {
+    marginTop: 20,
+  },
+  box2: {
+    justifyContent: 'center',
   },
   input: {
-    marginVertical: 8,
+    marginVertical: 10,
   },
   button: {
-    marginTop: 16,
+    marginVertical: 10,
+    borderRadius: 5,
+    backgroundColor: '#0080ff', 
   },
   loginText: {
-    marginTop: 16,
     textAlign: 'center',
-    color: 'blue',
+    marginTop: 20,
+    fontWeight: 'bold',
+    color: '#0080ff', 
   },
 });
-
-export default DriverSignup;

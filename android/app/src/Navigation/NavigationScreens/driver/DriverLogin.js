@@ -1,4 +1,3 @@
-// DriverLogin.js
 import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
@@ -18,6 +17,7 @@ const DriverLogin = () => {
     try {
       await auth().signInWithEmailAndPassword(email, password);
       console.log('User logged in successfully!');
+      navigation.navigate("DriverHome")
       // You can navigate to the home screen or any other screen upon successful login
     } catch (error) {
       console.error('Error logging in:', error.message);
@@ -42,7 +42,7 @@ const DriverLogin = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../../../Image/account.png")} style={styles.logo} />
+      <Image source={require("../../../Image/contactnew.png")} style={styles.logo} />
       <TextInput
         label="Email"
         value={email}
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   logo: {
-    width: 150, 
+    width: 150,
     height: 150,
     alignSelf: 'center',
     marginBottom: 16,
@@ -85,11 +85,13 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+    backgroundColor: '#0080ff', // Custom color for the button
   },
   signupText: {
     marginTop: 16,
     textAlign: 'center',
-    color: 'blue',
+    fontWeight: 'bold',
+    color: '#0080ff', // Custom color for the text
   },
 });
 

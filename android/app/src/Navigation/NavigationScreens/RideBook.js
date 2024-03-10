@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-import { useSelector, useDispatch } from 'react-redux';
-import { setDistance } from '../../redux/distanceSlice';
+import React, {useState, useEffect} from 'react';
+import {View, Text, TextInput, StyleSheet} from 'react-native';
+import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
+import {useSelector, useDispatch} from 'react-redux';
+import {setDistance} from '../../redux/distanceSlice';
 import RideCard from '../../component/RideCard';
 
 const RideBook = () => {
-  const destinationPlace = useSelector((state) => state.destination.destinationPlace);
-  const { locationName, latitude, longitude } = useSelector((state) => state.location);
-  const distance = useSelector((state) => state.distance.distance);
+  const destinationPlace = useSelector(
+    state => state.destination.destinationPlace,
+  );
+  const {locationName, latitude, longitude} = useSelector(
+    state => state.location,
+  );
+  const distance = useSelector(state => state.distance.distance);
 
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -16,10 +20,10 @@ const RideBook = () => {
   const OPEN_CAGE_API_KEY = '4a92e86c6073444a93c20b73f2f58285';
   const dispatch = useDispatch(); // Move useDispatch outside the useEffect
 
-  const fetchDestinationCoordinates = async (placeName) => {
+  const fetchDestinationCoordinates = async placeName => {
     try {
       const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-        placeName
+        placeName,
       )}&key=${OPEN_CAGE_API_KEY}`;
 
       const response = await fetch(apiUrl);
@@ -44,13 +48,15 @@ const RideBook = () => {
 
   useEffect(() => {
     const fetchDestination = async () => {
-      const destinationCoords = await fetchDestinationCoordinates(destinationPlace);
+      const destinationCoords = await fetchDestinationCoordinates(
+        destinationPlace,
+      );
       if (destinationCoords) {
         setDestination(destinationCoords);
       }
     };
 
-    const originCoords = { latitude: latitude, longitude: longitude };
+    const originCoords = {latitude: latitude, longitude: longitude};
     setOrigin(originCoords);
 
     fetchDestination();
@@ -61,7 +67,7 @@ const RideBook = () => {
       const calculatedDistance = calculateDistance(origin, destination);
       dispatch(setDistance(calculatedDistance)); // Dispatch the action with useDispatch
     }
-  }, [origin, destination, dispatch]); // Include dispatch in the dependency array
+  }, [origin, destination, dispatch]); 
 
   const calculateDistance = (startCoords, endCoords) => {
     const R = 6371;
@@ -81,7 +87,7 @@ const RideBook = () => {
     return distance;
   };
 
-  const deg2rad = (deg) => {
+  const deg2rad = deg => {
     return deg * (Math.PI / 180);
   };
 
@@ -109,24 +115,29 @@ const RideBook = () => {
             style={styles.map}
             initialRegion={{
               ...origin,
-              latitudeDelta: Math.abs(destination.latitude - origin.latitude) * 2,
-              longitudeDelta: Math.abs(destination.longitude - origin.longitude) * 2,
-            }}
-          >
+              latitudeDelta:
+                Math.abs(destination.latitude - origin.latitude) * 2,
+              longitudeDelta:
+                Math.abs(destination.longitude - origin.longitude) * 2,
+            }}>
             <Marker coordinate={origin} title="Origin" />
             <Marker coordinate={destination} title="Destination" />
 
-            <Polyline coordinates={[origin, destination]} strokeColor="#000" strokeWidth={2} />
+            <Polyline
+              coordinates={[origin, destination]}
+              strokeColor="#000"
+              strokeWidth={2}
+            />
           </MapView>
 
           {distance !== null && (
             <Text style={styles.distanceText}>{`Distance: ${Number(
-              distance.toFixed(2)
+              distance.toFixed(2),
             )} km`}</Text>
           )}
         </>
       )}
-      <RideCard/>
+      <RideCard />
     </View>
   );
 };

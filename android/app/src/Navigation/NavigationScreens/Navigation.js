@@ -17,8 +17,9 @@ import SelectionScreen from './SelectionScreen';
 import DriverWelcome from './driver/DriverWelcom';
 import DriverHome from './driver/DriverHome';
 import PreferredDrivers from './PrefferedDrivers';
-import ChatScreen from './UserChat';
+
 import BookFutureRide from './BookFutureRide';
+import ChatScreen from './ChatScreen';
 
 const Stack = createStackNavigator();
 const Navigation = () => {
@@ -94,16 +95,14 @@ const Navigation = () => {
           name="HomeScreen"
           component={HomeScreen}
           options={{
-           headerShown:false
-
+            headerShown: false,
           }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="BookFutureRide"
           component={BookFutureRide}
           options={{
-           headerShown:true
-
+            headerShown: true,
           }}
         />
         <Stack.Screen
@@ -153,7 +152,7 @@ const Navigation = () => {
             },
           }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="DriverHome"
           component={DriverHome}
           options={{
@@ -177,7 +176,7 @@ const Navigation = () => {
             },
           }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="ChatScreen"
           component={ChatScreen}
           options={{
@@ -190,7 +189,6 @@ const Navigation = () => {
           }}
         />
       </Stack.Navigator>
-      
     </NavigationContainer>
   );
 };

@@ -5,6 +5,7 @@ import Home from '../../bottomTabScreens/Home';
 import Services from '../../bottomTabScreens/Services';
 import Activity from '../../bottomTabScreens/Activity';
 import Account from '../../bottomTabScreens/Account';
+import Chat from '../../bottomTabScreens/Chat';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +32,10 @@ const HomeScreen = () => {
             iconSource = !focused
               ? require('../../Image/account.png')
               : require('../../Image/account_filled.png');
+          } else if (route.name === 'Chat') {
+            iconSource = !focused
+              ? require('../../Image/chat.png')
+              : require('../../Image/chat_filled.png');
           }
 
           return (
@@ -54,6 +59,8 @@ const HomeScreen = () => {
             label = 'Activity';
           } else if (route.name === 'Account') {
             label = 'Account';
+          } else if (route.name === 'Chat') {
+            label = 'Chat';
           }
 
           return (
@@ -85,6 +92,13 @@ const HomeScreen = () => {
       <Tab.Screen
         name="Activity"
         component={Activity}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={Chat}
         options={{
           headerShown: false,
         }}

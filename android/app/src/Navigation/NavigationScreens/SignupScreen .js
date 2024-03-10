@@ -1,186 +1,142 @@
-import React, { useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { TextInput, Text, Button, ActivityIndicator } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import {TextInput, Button} from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore'; 
+import firestore from '@react-native-firebase/firestore';
 
-const SignupScreen = () => {
-  const navigation = useNavigation();
-
+export default function SignupScreen({navigation}) {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-  const [isLodingSignUp, setIsLodingSignUp] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleCancelIconPressEmail = () => {
-    setEmail('');
-  };
-
-  const handleCancelIconPressPassword = () => {
-    setPassword('');
-  };
-
-  const navigateToLoginScreen = () => {
-    navigation.navigate('LoginScreen');
-  };
-
-  const handleSignup = () => {
-    setIsLodingSignUp(true);
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(async (userCredential) => {
-        const additionalUserInfo = {
-          email: userCredential.user.email,
-          role: 'user',
-        };
-        await firestore().collection('users').doc(userCredential.user.uid).set(additionalUserInfo);
-
-        Alert.alert('User account created & signed in!');
-        setIsLodingSignUp(false);
-        setEmail('');
-        setPassword('');
-        navigation.navigate('ProfileForm');
-      })
-      .catch((error) => {
-        if (error.code === 'auth/email-already-in-use') {
-          Alert.alert('That email address is already in use!');
-        }
-
-        if (error.code === 'auth/invalid-email') {
-          Alert.alert('That email address is invalid!');
-        }
-
-        setIsLodingSignUp(false);
+  const userSignup = async () => {
+    setLoading(true);
+    if (!email || !password || !name || !phoneNumber) {
+      alert('Please fill in all the fields');
+      setLoading(false);
+      return;
+    }
+    try {
+      const result = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      await firestore().collection('allUsers').doc(result.user.uid).set({
+        name: name,
+        email: result.user.email,
+        phoneNumber: phoneNumber,
+        uid: result.user.uid,
+        role: 'user',
+        status: 'online',
       });
+      setLoading(false);
+      // Clear the input fields
+      setEmail('');
+      setPassword('');
+      setName('');
+      setPhoneNumber('');
+      navigation.navigate('WelcomeScreen');
+    } catch (err) {
+      alert('Something went wrong');
+      setLoading(false);
+    }
   };
   
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#00ff00" />;
+  }
+
   return (
-    <View style={styles.container}>
-     
-      <View>
+    <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <View style={styles.box1}>
+        <Text style={styles.text}>Welcome to SpotsVista</Text>
         <Image
+          style={styles.img}
           source={require('../../Image/contactnew.png')}
-          style={styles.avatar}
         />
       </View>
-      <View style={styles.regTextContainer}>
-        <Text style={styles.regText}>
-          You will log in after verification if you are not registered
-        </Text>
-      </View>
-      <View style={styles.inputContainer}>
+      <View style={styles.box2}>
         <TextInput
-          label="Enter Your E-mail"
+          label="Email"
           value={email}
-          placeholderTextColor="black"
           onChangeText={text => setEmail(text)}
-          style={styles.textInput}
+          mode="outlined"
+          style={styles.input}
         />
-        {email.length > 0 && (
-          <TouchableOpacity onPress={handleCancelIconPressEmail}>
-            <Image
-              source={require('../../Image/cancelIcon.png')}
-              style={styles.cancelIcon}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-      <View style={[styles.inputContainer, { marginTop: 10 }]}>
         <TextInput
-          label="Enter Your Password"
+          label="Password"
           value={password}
           onChangeText={text => setPassword(text)}
-          placeholderTextColor="black"
-          style={styles.textInput}
+          mode="outlined"
           secureTextEntry
+          style={styles.input}
         />
-        {password.length > 0 && (
-          <TouchableOpacity onPress={handleCancelIconPressPassword}>
-            <Image
-              source={require('../../Image/cancelIcon.png')}
-              style={styles.cancelIcon}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <View style={styles.signupButtonContainer}>
-        {isLodingSignUp ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <Button
-            mode="contained"
-            onPress={handleSignup}
-            style={styles.signupButton}>
-            Sign up
-          </Button>
-        )}
-      </View>
-      <View>
-        <TouchableOpacity onPress={navigateToLoginScreen}>
-          <Text style={styles.loginText}>
-            Already have an account? Login here!
-          </Text>
+        <TextInput
+          label="Name"
+          value={name}
+          onChangeText={text => setName(text)}
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Phone Number"
+          value={phoneNumber}
+          onChangeText={text => setPhoneNumber(text)}
+          mode="outlined"
+          keyboardType="phone-pad"
+          style={styles.input}
+        />
+        <Button mode="contained" onPress={userSignup} style={styles.button}>
+          Signup
+        </Button>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+          <Text style={styles.loginText}>Already have an account?</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
     padding: 20,
   },
-  header: {
-    flexDirection: 'row',
-    marginTop: 30,
-    marginLeft: 10,
-  },
-  headerText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontFamily: 'Roboto',
-    fontSize: 18,
-    marginRight: 10,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    marginTop: 15,
-    alignSelf: 'center',
-  },
-  regTextContainer: {
-    marginLeft: 10,
-    marginTop: 10,
-  },
-  regText: {
-    color: 'black',
+  text: {
+    fontSize: 22,
+    color: 'green',
+    marginVertical: 10,
     textAlign: 'center',
   },
-  inputContainer: {
-    flexDirection: 'row',
+  img: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  box1: {
     marginTop: 20,
-    justifyContent: 'space-between',
-    marginLeft: 10,
   },
-  textInput: {
-    flex: 1,
-    // backgroundColor:"white"
+  box2: {
+    justifyContent: 'center',
   },
-  cancelIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 20,
-    marginTop: 15,
+  input: {
+    marginVertical: 10,
   },
-  signupButtonContainer: {
-    marginTop: 20,
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  signupButton: {
+  button: {
+    marginVertical: 10,
     borderRadius: 5,
   },
   loginText: {
@@ -190,5 +146,3 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
-
-export default SignupScreen;

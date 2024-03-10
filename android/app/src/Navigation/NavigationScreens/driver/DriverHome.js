@@ -1,10 +1,17 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import ChatDriverScreen from './ChatDriverScreen'
+import DriverLogout from './DriverLogout'
 
 const DriverHome = () => {
   return (
-    <ChatDriverScreen/>
+    // <ChatDriverScreen/>
+    <>
+
+      <View>
+        <DriverLogout/>
+      </View>
+    </>
   )
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import {View, Text, StyleSheet} from 'react-native';
+import {Button} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 
 const SelectionScreen = () => {
   const navigation = useNavigation();
@@ -18,10 +18,16 @@ const SelectionScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Select Your Role</Text>
       <View style={styles.buttonContainer}>
-        <Button mode="contained" onPress={handleUserButtonClick} style={styles.button}>
+        <Button
+          mode="contained"
+          onPress={handleUserButtonClick}
+          style={styles.button}>
           User
         </Button>
-        <Button mode="contained" onPress={handleDriverButtonClick} style={styles.button}>
+        <Button
+          mode="contained"
+          onPress={handleDriverButtonClick}
+          style={styles.button}>
           Driver
         </Button>
       </View>
@@ -39,7 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    color:"black"
+    color: 'black',
   },
   buttonContainer: {
     flexDirection: 'row',
