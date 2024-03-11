@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 
@@ -11,7 +11,6 @@ const Logout = () => {
     try {
       setLoading(true);
       await auth().signOut();
-      
       navigation.navigate('LoginScreen');
     } catch (error) {
       console.error('Error logging out:', error.message);
@@ -21,12 +20,34 @@ const Logout = () => {
   };
 
   return (
-    <View>
-      <Text>Account</Text>
+    <View style={styles.container}>
+     
       {loading && <ActivityIndicator size="large" />}
-      <Button title="Logout" onPress={handleLogout} disabled={loading} />
+      <TouchableOpacity style={styles.button} onPress={handleLogout} disabled={loading}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 999, // Ensure it's above other components
+  },
+  button: {
+    backgroundColor: 'darkblue',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+});
 export default Logout;

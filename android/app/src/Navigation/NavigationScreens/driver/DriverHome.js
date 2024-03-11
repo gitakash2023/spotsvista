@@ -1,18 +1,23 @@
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import ChatDriverScreen from './ChatDriverScreen'
 import DriverLogout from './DriverLogout'
+import DriverChat from './DriverChat'
 
 const DriverHome = () => {
   return (
-    // <ChatDriverScreen/>
-    <>
-
-      <View>
-        <DriverLogout/>
-      </View>
-    </>
+    <View style={styles.container}>
+      <DriverLogout />
+      <DriverChat />
+    </View>
   )
 }
 
-export default DriverHome
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+});
+
+export default DriverHome;

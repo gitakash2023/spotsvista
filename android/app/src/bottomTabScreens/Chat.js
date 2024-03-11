@@ -13,7 +13,11 @@ const Chat = () => {
     const unsubscribe = firestore()
       .collection('allUsers')
       .where('uid', '!=', currentUser.uid) 
+      .where('role', '==', 'driver') 
       .onSnapshot(querySnapshot => {
+        if (!querySnapshot) {
+          return;
+        }
         const usersData = [];
         querySnapshot.forEach(doc => {
           usersData.push({
