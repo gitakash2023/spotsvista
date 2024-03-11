@@ -18,7 +18,7 @@ const RideBook = () => {
   const [destination, setDestination] = useState(null);
 
   const OPEN_CAGE_API_KEY = '4a92e86c6073444a93c20b73f2f58285';
-  const dispatch = useDispatch(); // Move useDispatch outside the useEffect
+  const dispatch = useDispatch(); 
 
   const fetchDestinationCoordinates = async placeName => {
     try {
@@ -65,7 +65,7 @@ const RideBook = () => {
   useEffect(() => {
     if (origin && destination) {
       const calculatedDistance = calculateDistance(origin, destination);
-      dispatch(setDistance(calculatedDistance)); // Dispatch the action with useDispatch
+      dispatch(setDistance(calculatedDistance));
     }
   }, [origin, destination, dispatch]); 
 

@@ -1,13 +1,44 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import RazorpayCheckout from 'react-native-razorpay';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+// CustomPopup Component
+const CustomPopup = ({ visible, onClose, onSelectDriver, driversList }) => {
+  if (!visible) return null;
+
+  return (
+    <View style={styles.popupContainer}>
+      <View style={styles.popup}>
+        <Text style={styles.popupTitle}>Select Driver</Text>
+        <ScrollView style={styles.driverList}>
+          {driversList.map((driver) => (
+            <TouchableOpacity key={driver.id} onPress={() => onSelectDriver(driver)}>
+              <Text style={styles.driverName}>{driver.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.closeButtonText}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+// RideCard Component
 const RideCard = () => {
- const navigation = useNavigation();
+  const navigation = useNavigation();
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [driversList, setDriversList] = useState([]);
+  const [popupVisible, setPopupVisible] = useState(false);
+
   const cars = [
     { id: 1, name: 'UrbanRideExpress', imageUri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJbpcOjELFQj6z383VZEmnzz-1zxpx-tFo7FeAPOs9r5CSwXFqJoQ2HdFpSMze4kd3x6M&usqp=CAU' },
     { id: 2, name: 'CityNavigator', imageUri: 'https://www.picng.com/upload/taxi/png_taxi_23235.png' },
@@ -23,9 +54,24 @@ const RideCard = () => {
     return distance ? distance * pricePerKilometer : 10;
   };
 
-  const handleCardPress = (car) => {
+  const fetchDriversList = async () => {
+    const drivers = await firestore().collection('allUsers').where('role', '==', 'driver').get();
+    const driversData = drivers.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setDriversList(driversData);
+  };
+
+  useEffect(() => {
+    fetchDriversList();
+  }, []);
+
+  const handleCardPress = async (car) => {
+    setSelectedCar(car);
+    setPopupVisible(true);
+  };
+
+  const handleDriverSelection = (driver) => {
     const ridePrice = calculateRidePrice().toFixed(2);
-    const message = `Do you want to ride with ${car.name} from ${origin.locationName} to ${destination} with a ride price of ${ridePrice}?`;
+    const message = `Do you want to ride with ${selectedCar.name} from ${origin.locationName} to ${destination} with a ride price of ${ridePrice}?`;
 
     Alert.alert(
       'Ride Confirmation',
@@ -38,8 +84,7 @@ const RideCard = () => {
         {
           text: 'Confirm',
           onPress: () => {
-            // Call the function to initiate Razorpay payment
-            initiateRazorpayPayment(car.name, ridePrice);
+            initiateRazorpayPayment(selectedCar.name, ridePrice, driver.name, driver.id);
           },
         },
       ],
@@ -47,45 +92,42 @@ const RideCard = () => {
     );
   };
 
-  const initiateRazorpayPayment = (carName, ridePrice) => {
+  const initiateRazorpayPayment = (carName, ridePrice, driverName, driverId) => {
     const options = {
       description: `Payment for your ride with ${carName}`,
-      currency: 'INR', 
+      currency: 'INR',
       key: 'rzp_test_P9GGaAXRTQMmea',
       amount: (ridePrice * 100).toFixed(0),
       name: 'SpotsVista',
-      theme: { color: '#F37254' }, 
+      theme: { color: '#F37254' },
     };
 
     RazorpayCheckout.open(options)
       .then((data) => {
         console.log(`Payment Successful: ${JSON.stringify(data)}`);
-        // Update ride history in Firebase
-        updateRideHistory(carName, ridePrice);
-        console.log("added ride history")
+        updateRideHistory(carName, ridePrice, driverName, driverId);
       })
       .catch((error) => {
         console.error('Razorpay Error:', error.description);
       });
   };
 
-  const updateRideHistory = async (carName, ridePrice) => {
+  const updateRideHistory = async (carName, ridePrice, driverName, driverId) => {
     const user = auth().currentUser;
 
     if (user) {
       try {
-       
         await firestore().collection('ridehistory').add({
           userId: user.uid,
           carName,
           ridePrice,
+          driverName,
+          driverId, // Add driverId to ride history
           origin: origin.locationName,
           destination: destination,
           timestamp: firestore.FieldValue.serverTimestamp(),
         });
-        navigation.navigate("HomeScreen")
-
-       
+        navigation.navigate("HomeScreen");
       } catch (error) {
         console.error('Error updating ride history:', error.message);
       }
@@ -105,10 +147,15 @@ const RideCard = () => {
           </TouchableOpacity>
         ))}
       </View>
+      <CustomPopup
+        visible={popupVisible}
+        onClose={() => setPopupVisible(false)}
+        onSelectDriver={handleDriverSelection}
+        driversList={driversList}
+      />
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -139,6 +186,47 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'green',
     marginBottom: 10,
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    width: windowWidth,
+    height: windowHeight,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
+  },
+  popup: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  popupTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+    color:"black"
+  },
+  driverList: {
+    maxHeight: 200,
+    marginBottom: 10,
+  },
+  driverName: {
+    fontSize: 16,
+    marginBottom: 20,
+    color:"black"
+  },
+  closeButton: {
+    backgroundColor: 'red',
+    borderRadius: 5,
+    padding: 10,
+  },
+  closeButtonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
 

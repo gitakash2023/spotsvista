@@ -12,7 +12,7 @@ const Chat = () => {
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('allUsers')
-      .where('uid', '!=', currentUser.uid) // Exclude the current user
+      .where('uid', '!=', currentUser.uid) 
       .onSnapshot(querySnapshot => {
         const usersData = [];
         querySnapshot.forEach(doc => {
